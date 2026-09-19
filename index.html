@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Nailong💛</title>
+    <!-- Library Confetti / Kembang Api -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff176 0%, #ffd54f 50%, #ffb300 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Container Card Utama */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px 20px;
+            border-radius: 30px;
+            border: 4px solid #ff9800;
+            box-shadow: 0 20px 40px rgba(230, 81, 0, 0.25);
+            max-width: 420px;
+            width: 100%;
+            height: 85vh; /* Mengunci tinggi kartu agar pas di layar HP */
+            max-height: 650px;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Slide Konten dengan Scroll Aktif */
+        .slide {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out forwards;
+            overflow-y: auto; /* Mengaktifkan scroll pada teks panjang */
+            flex: 1;          /* Mengambil sisa ruang kartu */
+            min-height: 0;    /* PENTING: Memungkinkan scroll bekerja di Flexbox */
+            padding-right: 5px;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Tampilan Scrollbar Lucu & Halus */
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide::-webkit-scrollbar-thumb {
+            background: #ffb300;
+            border-radius: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* PERBAIKAN: Gambar Nailong Dibuat Responsif Tanpa Terpotong */
+        .nailong-img {
+            width: 100%;
+            max-height: 180px; /* Batas tinggi maksimal gambar */
+            object-fit: contain; /* Memastikan seluruh isi gambar terlihat utuh */
+            margin-bottom: 15px;
+            filter: drop-shadow(0 6px 12px rgba(255, 152, 0, 0.3));
+            animation: bounce 2s infinite ease-in-out;
+            flex-shrink: 0;
+            border-radius: 12px;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #e65100;
+            font-size: 1.7rem;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        p {
+            color: #4e342e;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        #pesan-slide5 {
+            text-align: justify; /* Membuat teks ucapan panjang di slide 5 rapi kanan-kiri */
+        }
+
+        /* Input & Pilihan Game Teka Teki */
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .quiz-btn {
+            background: #fff8e1;
+            border: 2px solid #ffb300;
+            color: #e65100;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-btn:hover {
+            background: #ffe082;
+            transform: scale(1.02);
+        }
+
+        /* Tombol Utama Navigasi */
+        .btn-next {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(245, 124, 0, 0.4);
+            transition: 0.2s;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-next:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ffa726, #fb8c00);
+        }
+
+        .error-msg {
+            color: #d32f2f;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Indicator Slide */
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #ffe082;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: #e65100;
+            width: 22px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        
+        <!-- SLIDE 1: Pembuka -->
+        <div class="slide active" id="slide1">
+            <img src="slide1..jpeg" class="nailong-img">
+            <h1>Ada Pesan Dari Nailong! </h1>
+            <p id="typewriter"></p>
+            <button class="btn-next" onclick="nextSlide(2)">Mulai Game Teka-Teki ✨</button>
+        </div>
+
+        <!-- SLIDE 2: Game Teka-Teki (Level 1) -->
+        <div class="slide" id="slide2">
+            <img src="slide2..jpeg" class="nailong-img">
+            <h1>Teka-Teki Nailong </h1>
+            <p>Makanan apa yang paling disukai Nailong dan bikin dia makin gemoy?</p>
+            
+            <div class="quiz-options">
+                <button class="quiz-btn" onclick="jawabTekaTeki(false)">1. Buah</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki(false)">2. Seblak</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki(true)">3. Bakso</button>
+            </div>
+            <div class="error-msg" id="errorQuiz">Tetot! Salah, coba tebak lagi! 😜</div>
+        </div>
+
+        <!-- SLIDE 3: Game Teka-Teki (Level 3) -->
+        <div class="slide" id="slide3">
+            <img src="slide3.jpg" class="nailong-img">
+            <h1>Teka-Teki Nailong </h1>
+            <p>Minuman apa yang paling disukai Nailong dan bikin dia makin gemoy?</p>
+            
+            <div class="quiz-options">
+                <button class="quiz-btn" onclick="jawabTekaTeki2(false)">1. Kopi</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki2(false)">2. Susu</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki2(true)">3. Air Putih</button>
+            </div>
+            <div class="error-msg" id="errorQuiz2">Tetot! Salah, coba tebak lagi! 😜</div>
+        </div>
+
+        <!-- SLIDE 4: Game Teka-Teki (Level 4) -->
+        <div class="slide" id="slide4">
+            <img src="slide4.jpg" class="nailong-img">
+            <h1>Teka-Teki Terakhir! 🎉</h1>
+            <p>Siapa nih yang hari ini lagi ulang tahun dan makin cantik/lucu?</p>
+            
+            <div class="quiz-options">
+                <button class="quiz-btn" onclick="jawabTekaTeki3(false)">1. Saya</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki3(true)">2. Me</button>
+                <button class="quiz-btn" onclick="jawabTekaTeki3(false)">3. Aku</button>
+            </div>
+            <div class="error-msg" id="errorQuiz3">Masa bukan kamu sih? Pilih lagi yang bener! 😠</div>
+        </div>
+
+        <!-- SLIDE 5: Puncak Ucapan & Kembang Api -->
+        <div class="slide" id="slide5">
+            <img src="slide5..jpeg" class="nailong-img">
+            <h1>🎉 HAPPY BIRTHDAY! 🎈</h1>
+            <p id="pesan-slide5">
+                ciee uda kepala dua nich.. selamat bertambah usia yaa! nda kerasa ya, akhirnya nambah umur lagi. semoga di umur yang baru ini u bisa nemuin lebih banya hal yang bikin u bahagia, lebih banya alasan buat senyum, dan tentunya lebih banya hal baik yang datang ke hidup u.<br>
+
+                i juga berharap semua yang selama ini u usahain, sekecil apa pun itu, pelan-pelan bisa terwujud. kalo ada sesuatu yang belum sesuai sama yang u harapkan, semoga u tetap punya kekuatan buat terus jalan. jangan terlalu keras sama diri sendiri juga, u nda harus selalu kuat dan nda harus selalu baik-baik aja.<br>
+
+                semoga tahun ini u bisa lebih banya menikmati hidup, nda terlalu sering overthinking, nda terlalu banya memendam semuanya sendirian, dan bisa lebih sayang sama diri u sendiri. because menurutku u juga pantas mendapatkan hal-hal baik yang selama ini u kasih ke orang lain.<br>
+
+                makasii yaw selama ini uda mau cerita banya hal ke aku. dari cerita random, yapping tiap hari, keluh kesah, sampai hal-hal kecil yang mungkin menurut u nda penting. honestly, i seneng bisa dengerin semuanya. but.. kalo suatu saat u ngerasa cape or cuma butuh tempat buat cerita, u know where to find me.<br>
+
+                i mungkin nda selalu tau harus ngomong apa atau bisa bantu banya, tapi setidaknya i bakal berusaha buat dengerin u.<br>
+
+                and on your special day, I just want to say: i hope life treats you kindly. semoga u selalu dikelilingi orang-orang yang tulus, disayang dengan cara yang baik, dan diberikan banya alasan untuk tetap tersenyum.<br>
+
+                semoga tahun ini menjadi salah satu chapter yang paling indah buat u. and hopefully, i masih boleh jadi bagian kecil dari cerita kamu di chapter itu.<br>
+
+                once again, happy birthday yaa lesung pipi acuu. semoga semua doa baik yang u panjatkan satu per satu menemukan jalannya. btw kadonya menyusul yaw xixixii💛
+            </p>
+            <button class="btn-next" onclick="efekRayakan()">Tiup Lilin & Kembang Api 🎂🎉</button>
+        </div>
+
+        <!-- Indicator Bintik Slide -->
+        <div class="dots">
+            <div class="dot active" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+            <div class="dot" id="dot4"></div>
+            <div class="dot" id="dot5"></div>
+        </div>
+
+    </div>
+
+    <!-- Musik HBD -->
+    <audio id="hbdSound" src="laguhbd.mp3"></audio>
+
+    <script>
+        // Teks Mengetik Slide 1
+        const pesanAwal = "Halo! Sebelum Nailong kasih something, kamu harus selesaikan tantangan teka-teki dari Nailong dulu ya! Siap?";
+        let idx = 0;
+        function ketikPesan() {
+            if (idx < pesanAwal.length) {
+                document.getElementById("typewriter").innerHTML += pesanAwal.charAt(idx);
+                idx++;
+                setTimeout(ketikPesan, 40);
+            }
+        }
+        window.onload = ketikPesan;
+
+        // FUNGSI GANTI SLIDE
+        function nextSlide(slideNumber) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+
+            const slideAktif = document.getElementById('slide' + slideNumber);
+            slideAktif.classList.add('active');
+            slideAktif.scrollTop = 0; // Reset scroll ke atas tiap ganti slide
+            document.getElementById('dot' + slideNumber).classList.add('active');
+        }
+
+        // Canti Jawaban Quiz 1
+        function jawabTekaTeki(benar) {
+            if (benar) {
+                document.getElementById('errorQuiz').style.display = 'none';
+                nextSlide(3);
+            } else {
+                document.getElementById('errorQuiz').style.display = 'block';
+            }
+        }
+
+        // Canti Jawaban Quiz 2
+        function jawabTekaTeki2(benar) {
+            if (benar) {
+                document.getElementById('errorQuiz2').style.display = 'none';
+                nextSlide(4);
+            } else {
+                document.getElementById('errorQuiz2').style.display = 'block';
+            }
+        }
+
+        // Canti Jawaban Quiz 3
+        function jawabTekaTeki3(benar) {
+            if (benar) {
+                document.getElementById("hbdSound").play();
+                nextSlide(5);
+            } else {
+                document.getElementById('errorQuiz3').style.display = 'block';
+            }
+        }
+
+        // Efek Puncak Kembang Api
+        function efekRayakan() {
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#ff9800', '#ffd54f', '#ff5722', '#ffffff']
+            });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    angle: 60,
+                    spread: 80,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 100,
+                    angle: 120,
+                    spread: 80,
+                    origin: { x: 1 }
+                });
+            }, 300);
+        }
+    </script>
+</body>
+</html>
